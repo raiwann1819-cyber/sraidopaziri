@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>スライドパズル</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 1em;
+      background: #f0f8ff;
+    }
+    #puzzle {
+      display: grid;
+      gap: 2px;
+      margin: 1em auto;
+      touch-action: manipulation;
+    }
+    .tile {
+      background-color: #4fc3f7;
+      color: white;
+      font-size: 5vw;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+    }
+    .empty {
+      background-color: #eee;
+    }
+    button {
+      padding: 0.5em 1em;
+      font-size: 1em;
+      margin-top: 1em;
+    }
+  </style>
+</head>
+<body>
+  <h2>レベル <span id="level">1</span></h2>
+  <div id="puzzle"></div>
+  <button onclick="nextLevel()">次のレベルへ ▶️</button>
+
+  <script>
+    const puzzle = document.getElementById('puzzle');
+    const levelDisplay = document.getElementById('level');
+    let level = 1;
+    const size = 3;
+    let tiles = [];
+
+    function initTiles() {
+      tiles = [...Array(size * size - 1).keys()].map(n => n + 1);
+      tiles.push(null);
+    }
+
+    function shuffle(times) {
+      for (let i = 0; i < times; i++) {
+        const empty = tiles.indexOf(null);
+        const moves = getValidMoves(empty);
+        const move = moves[Math.floor(Math.random() * moves.length)];
+        [tiles[empty], tiles[move]] = [tiles[move], tiles[empty]];
+      }
+    }
+
+    function getValidMoves(index) {
+      const moves = [];
+      const row = Math.floor(index / size);
+      const col = index % size;
+      if (row > 0) moves.push(index - size);
+      if (row < size - 1) moves.push(index + size);
+      if (col > 0) moves.push(index - 1);
+      if (col < size - 1) moves.push(index + 1);
+      return moves;
+    }
+
+    function draw() {
+      puzzle.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+      puzzle.innerHTML = '';
+      tiles.forEach((num, i) => {
+        const tile = document.createElement('div');
+        tile.className = 'tile';
+        if (num === null) {
+          tile.classList.add('empty');
+        } else {
+          tile.textContent = num;
+          tile.addEventListener('click', () => move(i));
+        }
+        puzzle.appendChild(tile);
+      });
+    }
+
+    function move(index) {
+      const empty = tiles.indexOf(null);
+      if (getValidMoves(index).includes(empty)) {
+        [tiles[index], tiles[empty]] = [tiles[empty], tiles[index]];
+        draw();
+      }
+    }
+
+    function startLevel() {
+      levelDisplay.textContent = level;
+      initTiles();
+      shuffle(level * 5); // レベルが上がるほどシャッフル回数が増える
+      draw();
+    }
+
+    function nextLevel() {
+      if (level < 200) {
+        level++;
+        startLevel();
+      } else {
+        alert("レベル200クリア！おめでとう🎉");
+      }
+    }
+
+    startLevel();
+  </script>
+</body>
+</html>
