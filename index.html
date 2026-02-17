@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>ランダム画像スライドパズル</title>
+  <title>解ける画像スライドパズル</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
@@ -68,8 +68,9 @@
       tiles.push(null);
     }
 
-    function shuffle(times) {
-      for (let i = 0; i < times; i++) {
+    function shuffleSolvable(steps) {
+      initTiles();
+      for (let i = 0; i < steps; i++) {
         const empty = tiles.indexOf(null);
         const moves = getValidMoves(empty);
         const move = moves[Math.floor(Math.random() * moves.length)];
@@ -149,8 +150,7 @@
       if (isImageLevel()) {
         currentImage = pickRandomImage();
       }
-      initTiles();
-      shuffle(level * 5);
+      shuffleSolvable(level * 5);
       draw();
     }
 
